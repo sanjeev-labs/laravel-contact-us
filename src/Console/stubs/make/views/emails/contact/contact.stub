@@ -1,0 +1,26 @@
+@component('mail::message')
+# There is an enquiry from contact us form!
+
+You can check details below.
+
+@component('mail::panel')
+## Contact details
+
+Name: {{ $request->input('name') }}
+
+Email: {{ $request->input('email') }}
+
+@if($request->input('phone')!='')
+Phone: {{ $request->input('phone') }}
+@endif
+
+Message: 
+
+{!! nl2br(e($request->input('message'))) !!}
+
+Thanks,<br>
+{{ config('app.name') }}
+
+@endcomponent
+
+@endcomponent

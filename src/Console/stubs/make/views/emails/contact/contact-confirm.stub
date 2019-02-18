@@ -1,0 +1,26 @@
+@component('mail::message')
+# Thanks for contacting us!
+
+You can check your enquiry details below. A member of our team will be in contact with you in the next few days.
+
+@component('mail::panel')
+## Contact details
+
+Name: {{ $request->input('name') }}
+
+Email: {{ $request->input('email') }}
+
+@if($request->input('phone')!='')
+Phone: {{ $request->('phone') }}
+@endif
+
+Message: 
+
+{!! nl2br(e($request->input('message'))) !!}
+
+Thanks,<br>
+{{ config('app.name') }}
+
+@endcomponent
+
+@endcomponent

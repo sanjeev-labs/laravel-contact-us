@@ -1,0 +1,4 @@
+
+
+Route::get('/contact-us', 'ContactController@index')->name("contact-us");
+Route::post('/contact-us', 'ContactController@postContact')->name("contact-post");

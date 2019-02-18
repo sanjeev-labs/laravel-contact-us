@@ -1,0 +1,99 @@
+<?php
+
+namespace {{namespace}}Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use GuzzleHttp\Client;
+
+class ContactController extends Controller
+{
+     /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('guest');
+    }
+
+    /**
+     * Show the contact us form to the user.
+     *
+     * @return Response
+     */
+    public function index()
+    {
+        return view('contact.contact');
+    }
+
+    // get a validator for an incoming contact request.
+    public function validator($request)
+    {
+        return Validator::make($request->all(), [
+          'name' => 'required|min:5',
+          'email' => 'required|email',
+          'message' => 'required|min:20',
+          'phone' => 'required',
+          'g-recaptcha-response'=>'required|recaptcha'
+        ]);
+    }
+
+    public function postContact(Request $request)
+    {
+        $validator = $this->validator($request);
+
+        if ($validator->fails())
+        {
+            return redirect()->back()->withErrors($validator->errors())
+            ->withInput();
+        }
+
+        if ($request->input('nothing') !='') {
+            return redirect()
+              ->back()
+              ->withInput();
+        }
+
+        $this->validateCaptach($request);
+
+        $mailto = config('contact.mailto.email');
+        $mailtoName = config('contact.mailto.name');
+        $contactMail = new \Sanjeevlabs\Contact\Mail\Contact($request);
+        \Mail::to($email, $mailtoName)->send($contactMail);
+
+        $email = $request->input("email");
+        $name = $request->input("name");
+        $confirmMail = new \Sanjeevlabs\Contact\Mail\ContactConfirm($request);
+        \Mail::to($email, $name)->send($confirmMail);
+
+        return redirect()
+              ->back()
+              ->with('success', 'Your message was sent successfully.');
+    }
+
+    protected function validateCaptach($request)
+    {
+        $client = new Client();
+
+        $response = $client->post(
+            'https://www.google.com/recaptcha/api/siteverify',
+            ['form_params'=>
+                [
+                    'secret'=> env('GOOGLE_RECAPTCHA_SECRET'),
+                    'response'=> $request->input('g-recaptcha-response'),
+                 ]
+            ]
+        );
+
+        $json = json_decode($response->getBody());
+
+        if ($json->success !== true) {
+            $request->session()->flash('warning', 'Try again to prove you are a human!');
+            return redirect()
+              ->back()
+              ->withInput();
+        }
+    }
+}

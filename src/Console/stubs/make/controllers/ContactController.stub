@@ -35,8 +35,7 @@ class ContactController extends Controller
           'name' => 'required|min:5',
           'email' => 'required|email',
           'message' => 'required|min:20',
-          'phone' => 'required',
-          'g-recaptcha-response'=>'required|recaptcha'
+          'phone' => 'required'
         ]);
     }
 
@@ -56,12 +55,19 @@ class ContactController extends Controller
               ->withInput();
         }
 
-        $this->validateCaptach($request);
+        $captResult = $this->validateCaptach($request);
+
+        if ($captResult->success != true) {
+            $request->session()->flash('warning', 'Try again to prove you are a human!');
+            return redirect()
+              ->back()
+              ->withInput();
+        }
 
         $mailto = config('contact.mailto.email');
         $mailtoName = config('contact.mailto.name');
         $contactMail = new \Sanjeevlabs\Contact\Mail\Contact($request);
-        \Mail::to($email, $mailtoName)->send($contactMail);
+        \Mail::to($mailto, $mailtoName)->send($contactMail);
 
         $email = $request->input("email");
         $name = $request->input("name");
@@ -81,19 +87,13 @@ class ContactController extends Controller
             'https://www.google.com/recaptcha/api/siteverify',
             ['form_params'=>
                 [
-                    'secret'=> env('GOOGLE_RECAPTCHA_SECRET'),
+                    'secret'=> config('contact.recaptcha.secret'),
                     'response'=> $request->input('g-recaptcha-response'),
                  ]
             ]
         );
 
         $json = json_decode($response->getBody());
-
-        if ($json->success !== true) {
-            $request->session()->flash('warning', 'Try again to prove you are a human!');
-            return redirect()
-              ->back()
-              ->withInput();
-        }
+        return $json;
     }
 }

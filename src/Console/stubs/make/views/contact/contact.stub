@@ -12,9 +12,9 @@
     </div>
     @endif
 
-    @if(session('warning'))
+    @if(Session::has('warning'))
     <div class='alert alert-warning'>
-        {{ session('warning') }}
+        {{ Session::get('warning') }}
     </div>
     @endif
    </div>
@@ -30,7 +30,7 @@
                 <label for="Name">{{ __('Name') }}</label>
                 <input type="text" class="form-control" id="name" placeholder="{{ __('Name')}}" name="name" value="{{ old('name') }}" required>
                 @if ($errors->has('name'))
-                  <span class="help-block">
+                  <span class="help-block alert-danger">
                     <strong>{{ $errors->first('name') }}</strong>
                   </span>
                 @endif
@@ -39,7 +39,7 @@
                 <label for="email">{{ __('E-Mail Address') }}</label>
                 <input type="email" class="form-control" id="email" placeholder="{{ __('Email')}}" name="email" value="{{ old('email') }}" required>
                 @if ($errors->has('email'))
-                  <span class="help-block">
+                  <span class="help-block alert-danger">
                     <strong>{{ $errors->first('email') }}</strong>
                   </span>
                 @endif
@@ -48,7 +48,7 @@
                 <label for="phone">{{ __('Phone Number') }}</label>
                 <input type="text" class="form-control" id="phone" placeholder="{{ __('Phone')}}" name="phone" value="{{ old('phone') }}" required>
                 @if ($errors->has('phone'))
-                  <span class="help-block">
+                  <span class="help-block alert-danger">
                     <strong>{{ $errors->first('phone') }}</strong>
                   </span>
                 @endif
@@ -57,7 +57,7 @@
                 <label for="message">{{ __('Message') }}</label>
                 <textarea type="text" class="form-control md-textarea" id="message" placeholder="{{ __('Type your messages here')}}" name="message" required>{{ old('message') }}</textarea>
                 @if ($errors->has('message'))
-                  <span class="help-block">
+                  <span class="help-block alert-danger">
                     <strong>{{ $errors->first('message') }}</strong>
                   </span>
                 @endif

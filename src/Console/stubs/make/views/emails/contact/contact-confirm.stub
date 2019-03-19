@@ -11,14 +11,14 @@ Name: {{ $request->input('name') }}
 Email: {{ $request->input('email') }}
 
 @if($request->input('phone')!='')
-Phone: {{ $request->('phone') }}
+Phone: {{ $request->input('phone') }}
 @endif
 
 Message: 
 
 {!! nl2br(e($request->input('message'))) !!}
 
-Thanks,<br>
+Thanks,<br/>
 {{ config('app.name') }}
 
 @endcomponent

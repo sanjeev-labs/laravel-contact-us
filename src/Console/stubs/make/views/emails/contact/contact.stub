@@ -18,7 +18,7 @@ Message:
 
 {!! nl2br(e($request->input('message'))) !!}
 
-Thanks,<br>
+Thanks,<br/>
 {{ config('app.name') }}
 
 @endcomponent
